@@ -21,6 +21,6 @@
 
 #define DLL_EXPORT __declspec(dllexport)
 
-#define VERSION "v1.0.1"
+#define VERSION "v1.2.0"
 
 #endif //PCH_H
