@@ -1,5 +1,4 @@
-﻿#ifndef PCH_H
-#define PCH_H
+﻿#pragma once
 
 #include "framework.h"
 #include <string>
@@ -12,6 +11,7 @@
 #include <timeapi.h>
 #include "Utility.h"
 #include <sstream>
+#include "LongerDays.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -21,6 +21,4 @@
 
 #define DLL_EXPORT __declspec(dllexport)
 
-#define VERSION "v1.2.0"
-
-#endif //PCH_H
+#define VERSION "v1.2.1"

@@ -1,12 +1,34 @@
 #pragma once
 #include "pch.h"
+#include <algorithm>
 
 static float ReadFloatIni(std::string file, std::string header, std::string key)
 {
 	char buf[50];
-	GetPrivateProfileStringA(header.c_str(), key.c_str(), "1", buf, 50, file.c_str());
+	GetPrivateProfileStringA(header.c_str(), key.c_str(), "NO_VALUE", buf, 50, file.c_str());
 	std::string str(buf);
+	if (str.compare("NO_VALUE") == 0)
+	{
+		Log::Warning << "Could not read ini file!" << Log::Endl;
+		return 1.0f;
+	}
+
 	return (float)atof(str.c_str());
+}
+
+static bool ReadBoolIni(std::string file, std::string header, std::string key)
+{
+	char buf[50];
+	GetPrivateProfileStringA(header.c_str(), key.c_str(), "NO_VALUE", buf, 50, file.c_str());
+	std::string str(buf);
+	if (str.compare("NO_VALUE") == 0)
+	{
+		Log::Warning << "Could not read ini file!" << Log::Endl;
+		return false;
+	}
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+
+	return str.compare("true") == 0;
 }
 
 static std::wstring GetModulePath(HMODULE module)

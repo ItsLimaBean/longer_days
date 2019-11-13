@@ -29,6 +29,9 @@
     <ClInclude Include="Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LongerDays.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -38,6 +41,9 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="core\NativeEngine.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="LongerDays.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
