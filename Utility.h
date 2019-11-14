@@ -59,16 +59,13 @@ static std::wstring GetModulePath(HMODULE module)
 	return moduleDir;
 }
 
-static void DrawGameText(uint16_t x, uint16_t y, std::string str, uint8_t r, uint8_t g, uint8_t b, uint8_t a, bool centre = false)
+static void DrawGameText(float x, float y, std::string str, uint8_t r, uint8_t g, uint8_t b, uint8_t a, bool centre = false)
 {
-	float pos_x = x / (float)1920;
-	float pos_y = y / (float)1080;
-
 	Native::Invoke<void, float, float>(N::SET_TEXT_SCALE, 0.342f, 0.342f);
 	Native::Invoke<void, bool>(N::SET_TEXT_CENTRE, centre);
 	Native::Invoke<void, uint8_t, uint8_t, uint8_t, uint8_t>(N::SET_TEXT_COLOR, r, g, b, a);
 	
 	const char* text = Native::Invoke<const char*, int, const char*, const char*>(N::_CREATE_VAR_STRING, 10, "LITERAL_STRING", str.c_str());
 	
-	Native::Invoke<void, const char*, float, float>(N::_DRAW_TEXT, text, pos_x, pos_y);
+	Native::Invoke<void, const char*, float, float>(N::_DRAW_TEXT, text, x, y);
 }

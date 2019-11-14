@@ -169,6 +169,7 @@
     <ClInclude Include="core\NativeNames.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LongerDays.h" />
+    <ClInclude Include="pattern.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>

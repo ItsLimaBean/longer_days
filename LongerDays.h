@@ -6,6 +6,7 @@ public:
 
 	bool show_welcome = true;
 	float multiplier = 1.0f;
+	uintptr_t clock_paused_ptr;
 private:
 	void UpdateGameTime();
 
