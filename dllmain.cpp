@@ -42,20 +42,7 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 		std::wstring logPath = _moduleDir + L"/longer_days_log.txt";
 
 		Log::Push(new Log::FileStream(logPath));
-
-		try
-		{
-			std::string str(ini_file.begin(), ini_file.end());
-			longer_days.multiplier = ReadFloatIni(str, "settings", "time_multiplier");
-			Log::Info << "Time Multiplier: " << longer_days.multiplier << Log::Endl;
-
-			longer_days.show_welcome = ReadBoolIni(str, "settings", "show_welcome");
-			Log::Info << "Show Welcome: " << longer_days.show_welcome << Log::Endl;
-		}
-		catch (DWORD e)
-		{
-			Log::Error << "Failed to read settings ini file! Error Code: " << HEX_UPPER(e) << Log::Endl;
-		}
+		longer_days.ReadConfig(ini_file);
 	}
     return TRUE;
 }

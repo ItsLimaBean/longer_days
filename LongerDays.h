@@ -3,11 +3,16 @@ class LongerDays
 {
 public:
 	void Tick();
+	void ReadConfig(std::wstring path);
 
 	bool show_welcome = true;
 	float multiplier = 1.0f;
+
+	float day_scale = 1.0f;
+	float night_scale = 1.0f;
 private:
 	void UpdateGameTime();
+	float GetScaledTime(int hour);
 
 	static constexpr float hour_multiplier[] = {
 	1.99f,

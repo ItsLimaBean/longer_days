@@ -1,6 +1,30 @@
 #include "pch.h"
 #include "LongerDays.h"
 
+void LongerDays::ReadConfig(std::wstring path)
+{
+	std::string str(path.begin(), path.end());
+
+	try
+	{
+		multiplier = ReadFloatIni(str, "settings", "time_multiplier");
+		Log::Info << "Time Multiplier: " << multiplier << Log::Endl;
+
+		show_welcome = ReadBoolIni(str, "settings", "show_welcome");
+		Log::Info << "Show Welcome: " << show_welcome << Log::Endl;
+
+		day_scale = ReadFloatIni(str, "settings", "day_scale");
+		Log::Info << "Day Scale: " << day_scale << Log::Endl;
+
+		night_scale = ReadFloatIni(str, "settings", "night_scale");
+		Log::Info << "Night Scale: " << night_scale << Log::Endl;
+	}
+	catch (DWORD e)
+	{
+		Log::Error << "Failed to read settings ini file! Error Code: " << HEX_UPPER(e) << Log::Endl;
+	}
+}
+
 void LongerDays::Tick()
 {
 	if (Native::Invoke<bool>(N::GET_IS_LOADING_SCREEN_ACTIVE))
@@ -48,7 +72,7 @@ void LongerDays::UpdateGameTime()
 	{
 		last_hour = hour;
 
-		int new_time = (int)((multiplier * 2000.f) * hour_multiplier[hour]);
+		int new_time = (int)(((multiplier * 2000.f) * hour_multiplier[hour]) * GetScaledTime(hour));
 		int game_time = Native::Invoke<int>(N::GET_MILLISECONDS_PER_GAME_MINUTE);
 
 		if (game_time != new_time)
@@ -57,4 +81,9 @@ void LongerDays::UpdateGameTime()
 			Log::Info << "Updated Milliseconds Per Game Minute to " << new_time << Log::Endl;
 		}
 	}
+}
+
+float LongerDays::GetScaledTime(int hour)
+{
+	return (hour >= 7 && hour <= 19) ? day_scale : night_scale;
 }
