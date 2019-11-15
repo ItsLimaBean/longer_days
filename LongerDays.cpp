@@ -32,7 +32,7 @@ void LongerDays::Tick()
 	}
 
 	std::ostringstream dbg;
-	dbg << "game:ours " << Native::Invoke<int>(N::GET_MILLISECONDS_PER_GAME_MINUTE) << ":" << (int)(2000.f * multiplier) << " current in-game time: " << Native::Invoke<int>(N::GET_CLOCK_HOURS) << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time) << " pause: " << (int)(*(int8_t*)clock_paused_ptr);
+	dbg << "game:ours " << Native::Invoke<int>(N::GET_MILLISECONDS_PER_GAME_MINUTE) << ":" << (int)(2000.f * multiplier) << " current in-game time: " << Native::Invoke<int>(N::GET_CLOCK_HOURS) << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time);
 
 	DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
 	last_value = mins;

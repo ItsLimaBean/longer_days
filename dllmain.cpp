@@ -7,11 +7,6 @@ extern "C" {
 	{
 		Native::SetEssentialFunction(getAddress);
 
-		longer_days.clock_paused_ptr = Signature("0F B6 0D ? ? ? ? 3A CB").Scan().Add(3).Rip().As<uintptr_t>();
-		if (longer_days.clock_paused_ptr == 0)
-			Log::Warning << "Could not find Clock Paused Pointer!" << Log::Endl;
-		Log::Info << HEX_UPPER(longer_days.clock_paused_ptr) << Log::Endl;
-
 		Log::Info << "Intialized Longer Days " << VERSION << Log::Endl;
 	}
 
@@ -32,10 +27,6 @@ extern "C" {
 		{
 			int hour = Native::Invoke<int>(N::GET_CLOCK_HOURS);
 			Native::Invoke<int, int, int, int>(N::SET_CLOCK_TIME, hour == 23 ? 0 : hour + 1, 0, 0);
-		}
-		if (key == 0x74)
-		{
-			*(int8_t*)longer_days.clock_paused_ptr = (*(int8_t*)longer_days.clock_paused_ptr == 1 ? 0 : 1);
 		}
 	}
 #endif
@@ -65,7 +56,6 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 		{
 			Log::Error << "Failed to read settings ini file! Error Code: " << HEX_UPPER(e) << Log::Endl;
 		}
-
 	}
     return TRUE;
 }
