@@ -1,12 +1,11 @@
 ﻿#pragma once
 
-#include "framework.h"
 #include <string>
 #include <iostream>
 #include <cstdint>
 #include <vector>
-#include "core/NativeEngine.h"
-#include "core/NativeNames.h"
+#include "api/NativeEngine.h"
+#include "api/natives.h"
 #include "alt-log.h"
 #include <timeapi.h>
 #include "Utility.h"

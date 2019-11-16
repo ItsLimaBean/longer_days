@@ -1,50 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="API">
+      <UniqueIdentifier>{03f7e615-13b8-4246-a848-eecb6da374bc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="LongerDays">
+      <UniqueIdentifier>{f5cf7cfb-dabe-41a7-893e-f6264d5c5270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{edfd3981-c189-4c5d-a2a4-9651237a9227}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="api\NativeEngine.h">
+      <Filter>API</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\NativeEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alt-log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\NativeNames.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="api\natives.h">
+      <Filter>API</Filter>
     </ClInclude>
     <ClInclude Include="Utility.h">
-      <Filter>Header Files</Filter>
+      <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="LongerDays.h">
-      <Filter>Header Files</Filter>
+      <Filter>LongerDays</Filter>
+    </ClInclude>
+    <ClInclude Include="alt-log.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>LongerDays</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\NativeEngine.cpp">
-      <Filter>Source files</Filter>
+      <Filter>LongerDays</Filter>
     </ClCompile>
     <ClCompile Include="LongerDays.cpp">
-      <Filter>Source files</Filter>
+      <Filter>LongerDays</Filter>
+    </ClCompile>
+    <ClCompile Include="api\NativeEngine.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>LongerDays</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

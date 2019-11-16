@@ -18,15 +18,14 @@ extern "C" {
 #ifdef _DEBUG // This code will only be compiled for Debug
 	DLL_EXPORT void OnKeyDown(uint32_t key)
 	{
-
 		if (key == 0x72)
 		{
 			longer_days.multiplier++;
 		}
 		if (key == 0x73)
 		{
-			int hour = Native::Invoke<int>(N::GET_CLOCK_HOURS);
-			Native::Invoke<int, int, int, int>(N::SET_CLOCK_TIME, hour == 23 ? 0 : hour + 1, 0, 0);
+			int hour = CLOCK::GET_CLOCK_HOURS();
+			CLOCK::SET_CLOCK_TIME(hour == 23 ? 0 : hour + 1, 0, 0);
 		}
 	}
 #endif
