@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "LongerDays.h"
 
 void LongerDays::ReadConfig(std::wstring path)
 {
@@ -32,11 +31,9 @@ void LongerDays::Tick()
 
 	if (show_welcome)
 	{
-		static int timer = -1;
-		if (timer == -1)
-			timer = timeGetTime();
+		static auto timeout = std::chrono::high_resolution_clock::now() + 10s;
 
-		if ((timeGetTime() - timer) >= 10000)
+		if (std::chrono::high_resolution_clock::now() >= timeout)
 			show_welcome = false;
 		
 		std::ostringstream stream;
@@ -65,20 +62,20 @@ void LongerDays::Tick()
 
 void LongerDays::UpdateGameTime()
 {
-	static int last_hour = -1, change_time = 0;
-	int hour = CLOCK::GET_CLOCK_HOURS();
+	static auto interval = std::chrono::high_resolution_clock::now() + 15s;
+	static int last_hour = -1;
 
-	if (last_hour != hour || (timeGetTime() - change_time) >= 60000)
+	int hour = CLOCK::GET_CLOCK_HOURS();
+	if (std::chrono::high_resolution_clock::now() >= interval || last_hour != hour)
 	{
+		interval = std::chrono::high_resolution_clock::now() + 15s;
 		last_hour = hour;
 
-		int new_time = (int)(((multiplier * 2000.f) * hour_multiplier[hour]) * GetScaledTime(hour));
-		int game_time = CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE();
-
-		if (game_time != new_time)
+		int time = (int)(((multiplier * 2000.f) * hour_multiplier[hour]) * GetScaledTime(hour));
+		if (time != CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE())
 		{
-			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(new_time);
-			Log::Info << "Updated Milliseconds Per Game Minute to " << new_time << Log::Endl;
+			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(time);
+			Log::Info << "Changed time to: " << time << Log::Endl;
 		}
 	}
 }
