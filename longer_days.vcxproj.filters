@@ -30,6 +30,9 @@
     <ClInclude Include="pch.h">
       <Filter>LongerDays</Filter>
     </ClInclude>
+    <ClInclude Include="api\types.h">
+      <Filter>API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
