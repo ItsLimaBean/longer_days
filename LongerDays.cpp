@@ -42,22 +42,36 @@ void LongerDays::Tick()
 	}
 
 	UpdateGameTime();
-
 #ifdef _DEBUG // This code will only be compiled for Debug
-	static int last_value;
-	static int change_time = timeGetTime();
-	int mins = CLOCK::GET_CLOCK_MINUTES();
-	if (last_value != mins)
+
+	static int key_tmr = timeGetTime();
+	if (IsKeyPressed(0x72) && (timeGetTime() - key_tmr) >= 200)
 	{
-		change_time = timeGetTime();
+		key_tmr = timeGetTime();
+		multiplier++;
+	}
+	if (IsKeyPressed(0x73) && (timeGetTime() - key_tmr) >= 200)
+	{
+		key_tmr = timeGetTime();
+		int hour = CLOCK::GET_CLOCK_HOURS();
+		CLOCK::SET_CLOCK_TIME(hour == 23 ? 0 : hour + 1, 0, 0);
 	}
 
-	std::ostringstream dbg;
-	dbg << "game:ours " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << ":" << (int)(2000.f * multiplier) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time);
+		static int last_value;
+		static int change_time = timeGetTime();
+		int mins = CLOCK::GET_CLOCK_MINUTES();
+		if (last_value != mins)
+		{
+			change_time = timeGetTime();
+		}
 
-	DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
-	last_value = mins;
+		std::ostringstream dbg;
+		dbg << "game:ours " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << ":" << (int)(2000.f * multiplier) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time);
+
+		DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
+		last_value = mins;
 #endif
+
 }
 
 void LongerDays::UpdateGameTime()

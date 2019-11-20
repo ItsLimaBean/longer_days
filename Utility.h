@@ -68,3 +68,9 @@ static void DrawGameText(float x, float y, std::string str, uint8_t r, uint8_t g
 	const char* text = MISC::_CREATE_VAR_STRING(10, "LITERAL_STRING", str.c_str());
 	HUD::_DRAW_TEXT(text, x, y);
 }
+
+static SHORT IsKeyPressed(int key)
+{
+	static HWND	game = FindWindowA("sgaWindow", "Red Dead Redemption 2");
+	return GetForegroundWindow() == game ? GetAsyncKeyState(key) & 0x8000 : 0;
+}

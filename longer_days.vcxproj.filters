@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="api\NativeEngine.h">
-      <Filter>API</Filter>
-    </ClInclude>
     <ClInclude Include="api\natives.h">
       <Filter>API</Filter>
     </ClInclude>
@@ -33,6 +30,15 @@
     <ClInclude Include="api\types.h">
       <Filter>API</Filter>
     </ClInclude>
+    <ClInclude Include="api\enums.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="api\nativeCaller.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="api\main.h">
+      <Filter>API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -40,9 +46,6 @@
     </ClCompile>
     <ClCompile Include="LongerDays.cpp">
       <Filter>LongerDays</Filter>
-    </ClCompile>
-    <ClCompile Include="api\NativeEngine.cpp">
-      <Filter>API</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>LongerDays</Filter>

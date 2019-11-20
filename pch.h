@@ -8,7 +8,7 @@
 #include <chrono>
 #include <sstream>
 
-#include "api/NativeEngine.h"
+#include "api/main.h"
 #include "api/natives.h"
 #include "alt-log.h"
 #include "Utility.h"
@@ -20,6 +20,6 @@
 #endif
 
 #define DLL_EXPORT __declspec(dllexport)
-#define VERSION "v1.2.1"
+#define VERSION "v1.3.0"
 
 using namespace std::chrono_literals;
