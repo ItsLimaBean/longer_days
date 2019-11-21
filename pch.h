@@ -19,7 +19,6 @@
 #pragma comment(lib, "Winmm.lib")
 #endif
 
-#define DLL_EXPORT __declspec(dllexport)
-#define VERSION "v1.3.0"
+#define VERSION "v1.3.1"
 
 using namespace std::chrono_literals;

@@ -6,17 +6,14 @@ void LongerDays::ReadConfig(std::wstring path)
 
 	try
 	{
-		multiplier = ReadFloatIni(str, "settings", "time_multiplier");
-		Log::Info << "Time Multiplier: " << multiplier << Log::Endl;
-
 		show_welcome = ReadBoolIni(str, "settings", "show_welcome");
 		Log::Info << "Show Welcome: " << show_welcome << Log::Endl;
 
-		day_scale = ReadFloatIni(str, "settings", "day_scale");
-		Log::Info << "Day Scale: " << day_scale << Log::Endl;
+		day_time = ReadFloatIni(str, "settings", "day_time");
+		Log::Info << "Day Time: " << day_time << Log::Endl;
 
-		night_scale = ReadFloatIni(str, "settings", "night_scale");
-		Log::Info << "Night Scale: " << night_scale << Log::Endl;
+		night_time = ReadFloatIni(str, "settings", "night_time");
+		Log::Info << "Night Time: " << night_time << Log::Endl;
 	}
 	catch (DWORD e)
 	{
@@ -48,7 +45,8 @@ void LongerDays::Tick()
 	if (IsKeyPressed(0x72) && (timeGetTime() - key_tmr) >= 200)
 	{
 		key_tmr = timeGetTime();
-		multiplier++;
+		day_time++;
+		night_time++;
 	}
 	if (IsKeyPressed(0x73) && (timeGetTime() - key_tmr) >= 200)
 	{
@@ -66,7 +64,7 @@ void LongerDays::Tick()
 		}
 
 		std::ostringstream dbg;
-		dbg << "game:ours " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << ":" << (int)(2000.f * multiplier) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time);
+		dbg << "game:ours " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << ":" << (int)(GetTimeFromHour(CLOCK::GET_CLOCK_HOURS()) * 1000.f) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time);
 
 		DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
 		last_value = mins;
@@ -85,7 +83,8 @@ void LongerDays::UpdateGameTime()
 		interval = std::chrono::high_resolution_clock::now() + 15s;
 		last_hour = hour;
 
-		int time = (int)(((multiplier * 2000.f) * hour_multiplier[hour]) * GetScaledTime(hour));
+		//int time = (int)(((multiplier * 2000.f) * hour_multiplier[hour]) * GetScaledTime(hour));
+		int time = (int)((GetTimeFromHour(hour) * 1000.f) * hour_multiplier[hour]);
 		if (time != CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE())
 		{
 			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(time);
@@ -94,7 +93,7 @@ void LongerDays::UpdateGameTime()
 	}
 }
 
-float LongerDays::GetScaledTime(int hour)
+float LongerDays::GetTimeFromHour(int hour)
 {
-	return (hour >= 7 && hour <= 19) ? day_scale : night_scale;
+	return (hour >= 7 && hour <= 19) ? day_time : night_time;
 }
