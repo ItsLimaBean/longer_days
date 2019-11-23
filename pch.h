@@ -19,6 +19,6 @@
 #pragma comment(lib, "Winmm.lib")
 #endif
 
-#define VERSION "v1.3.1"
+#define VERSION "v1.3.2"
 
 using namespace std::chrono_literals;

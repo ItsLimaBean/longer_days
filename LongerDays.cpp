@@ -14,6 +14,13 @@ void LongerDays::ReadConfig(std::wstring path)
 
 		night_time = ReadFloatIni(str, "settings", "night_time");
 		Log::Info << "Night Time: " << night_time << Log::Endl;
+
+		day_start = (int)ReadFloatIni(str, "settings", "day_start");
+		Log::Info << "Day Start: " << day_start << Log::Endl;
+
+		day_end = (int)ReadFloatIni(str, "settings", "day_end");
+		Log::Info << "Day End: " << day_end << Log::Endl;
+
 	}
 	catch (DWORD e)
 	{
@@ -95,5 +102,5 @@ void LongerDays::UpdateGameTime()
 
 float LongerDays::GetTimeFromHour(int hour)
 {
-	return (hour >= 7 && hour <= 19) ? day_time : night_time;
+	return (hour >= day_start && hour <= day_end) ? day_time : night_time;
 }
