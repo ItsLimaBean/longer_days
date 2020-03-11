@@ -6,6 +6,8 @@ void LongerDays::ReadConfig(std::wstring path)
 
 	try
 	{
+		Log::Info << "Version " << VERSION << Log::Endl;
+
 		show_welcome = ReadBoolIni(str, "settings", "show_welcome");
 		Log::Info << "Show Welcome: " << show_welcome << Log::Endl;
 
@@ -35,9 +37,9 @@ void LongerDays::Tick()
 
 	if (show_welcome)
 	{
-		static auto timeout = std::chrono::high_resolution_clock::now() + 10s;
+		static auto timeout = timeGetTime() + 10000;
 
-		if (std::chrono::high_resolution_clock::now() >= timeout)
+		if (timeGetTime() >= timeout)
 			show_welcome = false;
 		
 		std::ostringstream stream;
@@ -62,42 +64,63 @@ void LongerDays::Tick()
 		CLOCK::SET_CLOCK_TIME(hour == 23 ? 0 : hour + 1, 0, 0);
 	}
 
-		static int last_value;
-		static int change_time = timeGetTime();
-		int mins = CLOCK::GET_CLOCK_MINUTES();
-		if (last_value != mins)
-		{
-			change_time = timeGetTime();
-		}
+	static int last_value;
+	static int change_time = timeGetTime();
+	int mins = CLOCK::GET_CLOCK_MINUTES();
+	int secs = CLOCK::GET_CLOCK_SECONDS();
+	if (last_value != mins)
+	{
+		change_time = timeGetTime();
+	}
 
-		std::ostringstream dbg;
-		dbg << "game:ours " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << ":" << (int)(GetTimeFromHour(CLOCK::GET_CLOCK_HOURS()) * 1000.f) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << " time since update: " << (timeGetTime() - change_time);
+	std::ostringstream dbg;
+	dbg << "	updates every " << (int)(GetTimeFromHour(CLOCK::GET_CLOCK_HOURS()) * 1000.f) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << "|" << (secs < 10 ? ":0" : ":")
+		<< secs << " time since update: " << (timeGetTime() - change_time)  << " frame time: " << MISC::GET_FRAME_TIME();
 
-		DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
-		last_value = mins;
+	DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
+	last_value = mins;
 #endif
 
 }
 
 void LongerDays::UpdateGameTime()
 {
-	static auto interval = std::chrono::high_resolution_clock::now() + 15s;
-	static int last_hour = -1;
+	bool should_pause_clock = PLAYER::IS_PLAYER_CONTROL_ON(PLAYER::PLAYER_ID()) && !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
+	CLOCK::PAUSE_CLOCK(should_pause_clock, should_pause_clock);
+	
 
-	int hour = CLOCK::GET_CLOCK_HOURS();
-	if (std::chrono::high_resolution_clock::now() >= interval || last_hour != hour)
+	static float hours = (float)CLOCK::GET_CLOCK_HOURS();
+	static float minutes = (float)CLOCK::GET_CLOCK_MINUTES();
+	static float seconds = (float)CLOCK::GET_CLOCK_SECONDS();
+
+	if (!should_pause_clock)
 	{
-		interval = std::chrono::high_resolution_clock::now() + 15s;
-		last_hour = hour;
-
-		//int time = (int)(((multiplier * 2000.f) * hour_multiplier[hour]) * GetScaledTime(hour));
-		int time = (int)((GetTimeFromHour(hour) * 1000.f) * hour_multiplier[hour]);
-		if (time != CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE())
-		{
-			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(time);
-			Log::Info << "Changed time to: " << time << Log::Endl;
-		}
+		hours = (float)CLOCK::GET_CLOCK_HOURS();
+		minutes = (float)CLOCK::GET_CLOCK_MINUTES();
+		seconds = (float)CLOCK::GET_CLOCK_SECONDS();
+		return;
 	}
+
+	seconds += MISC::GET_FRAME_TIME() * ( 60 / GetTimeFromHour(hours));
+
+	if (seconds >= 59.f)
+	{
+		seconds = 0.f;
+		minutes++;
+	}
+
+	if (minutes >= 59.f)
+	{
+		minutes = 0.f;
+		hours++;
+	}
+
+	if (hours >= 23.f)
+	{
+		hours = 0.f;
+	}
+
+	CLOCK::SET_CLOCK_TIME((int)hours, (int)minutes, (int)seconds);
 }
 
 float LongerDays::GetTimeFromHour(int hour)

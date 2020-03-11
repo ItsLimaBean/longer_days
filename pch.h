@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <vector>
 #include <Windows.h>
-#include <chrono>
 #include <sstream>
 
 #include "api/main.h"
@@ -14,11 +13,7 @@
 #include "Utility.h"
 #include "LongerDays.h"
 
-#ifdef _DEBUG
 #include <timeapi.h>
 #pragma comment(lib, "Winmm.lib")
-#endif
 
-#define VERSION "v1.3.2"
-
-using namespace std::chrono_literals;
+#define VERSION "v2.0.0"
