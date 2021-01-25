@@ -2,28 +2,6 @@
 
 LongerDays longer_days;
 
-/*extern "C" {
-	DLL_EXPORT void Init(GetNativeAddressFunc getAddress)
-	{
-		Native::SetEssentialFunction(getAddress);
-
-		Log::Info << "Intialized Longer Days " << VERSION << Log::Endl;
-	}
-
-	DLL_EXPORT void Tick()
-	{
-		longer_days.Tick();
-	}
-
-#ifdef _DEBUG // This code will only be compiled for Debug
-	DLL_EXPORT void OnKeyDown(uint32_t key)
-	{
-		
-		}
-	}
-#endif
-}*/
-
 void ScriptMain()
 {
 	while (true)

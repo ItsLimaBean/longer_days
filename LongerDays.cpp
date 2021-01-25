@@ -85,7 +85,8 @@ void LongerDays::Tick()
 
 void LongerDays::UpdateGameTime()
 {
-	bool should_pause_clock = PLAYER::IS_PLAYER_CONTROL_ON(PLAYER::PLAYER_ID()) && !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
+	Player id = PLAYER::PLAYER_ID();
+	bool should_pause_clock = (PLAYER::IS_PLAYER_CONTROL_ON(id) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(id)) && !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
 	CLOCK::PAUSE_CLOCK(should_pause_clock, should_pause_clock);
 	
 
