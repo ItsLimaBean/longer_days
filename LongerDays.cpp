@@ -114,21 +114,14 @@ void LongerDays::Tick()
 bool LongerDays::ShouldUpdate()
 {
 	Player id = PLAYER::PLAYER_ID();
+	Vector3 coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), 0, 0);
 
 	bool has_control = PLAYER::IS_PLAYER_CONTROL_ON(id) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(id);
 	bool is_playing = !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
 	bool is_mission = MISC::GET_MISSION_FLAG();
+	bool near_show = BUILTIN::VDIST2(coords.x, coords.y, coords.z, -347.36, 699.83, 117.162) <= 75 || BUILTIN::VDIST2(coords.x, coords.y, coords.z, 2697.13, -1353.49, 49.45) <= 95;
 
-	bool should_update_time = is_playing && has_control && !is_mission;
-	
-	Vector3 coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), 0, 0);
-	if (BUILTIN::VDIST2(coords.x, coords.y, coords.z, -347.36, 699.83, 117.162) <= 75
-		|| BUILTIN::VDIST2(coords.x, coords.y, coords.z, 2697.13, -1353.49, 49.45) <= 95)
-	{
-		return false;
-	}
-
-	return is_playing && has_control && !is_mission;
+	return is_playing && has_control && !is_mission && !near_show;
 }
 
 void LongerDays::UpdateGameTime()
