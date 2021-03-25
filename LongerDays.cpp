@@ -51,17 +51,17 @@ void LongerDays::Tick()
 #ifdef _DEBUG // This code will only be compiled for Debug
 
 	static int key_tmr = timeGetTime();
-	if (IsKeyPressed(0x72) && (timeGetTime() - key_tmr) >= 200)
+	if (IsKeyPressed(0x76) && (timeGetTime() - key_tmr) >= 200) // F7
 	{
 		key_tmr = timeGetTime();
 		day_time++;
 		night_time++;
 	}
-	if (IsKeyPressed(0x73) && (timeGetTime() - key_tmr) >= 200)
+	if (IsKeyPressed(0x77) && (timeGetTime() - key_tmr) >= 200) // F8
 	{
 		key_tmr = timeGetTime();
-		int hour = CLOCK::GET_CLOCK_HOURS();
-		CLOCK::SET_CLOCK_TIME(hour == 23 ? 0 : hour + 1, 0, 0);
+		day_time--;
+		night_time--;
 	}
 
 	static int last_value;
@@ -73,28 +73,72 @@ void LongerDays::Tick()
 		change_time = timeGetTime();
 	}
 
-	std::ostringstream dbg;
+	std::ostringstream str; str << "Time From Hour: " << (int)(GetTimeFromHour(CLOCK::GET_CLOCK_HOURS()) * 1000.f) << "ms";
+	DrawGameText(0.0f, 0.03f, str.str(), 255, 0, 0, 255);
+
+	str.str(std::string()); str << "Update: " << (ShouldUpdate() ? "TRUE" : "FALSE");
+	DrawGameText(0.0f, 0.06f, str.str(), 255, 0, 0, 255);
+
+	str.str(std::string()); str << "Game Time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << (secs < 10 ? ":0" : ":") << secs;
+	DrawGameText(0.0f, 0.09f, str.str(), 255, 0, 0, 255);
+
+	str.str(std::string()); str << "Last Update: " << (timeGetTime() - change_time) << "ms ago";
+	DrawGameText(0.0f, 0.12f, str.str(), 255, 0, 0, 255);
+
+	str.str(std::string()); str << "FPS: " << (int)(1.0f / MISC::GET_FRAME_TIME()) << " (" << MISC::GET_FRAME_TIME() << "s)";
+	DrawGameText(0.0f, 0.15f, str.str(), 255, 0, 0, 255);
+
+
+	str.str(std::string()); str << "Is Rendering TV?: " << GRAPHICS::GET_TV_CHANNEL();
+	DrawGameText(0.0f, 0.18f, str.str(), 255, 0, 0, 255);
+
+	/*std::ostringstream dbg;
 	dbg << "	updates every " << (int)(GetTimeFromHour(CLOCK::GET_CLOCK_HOURS()) * 1000.f) << " current in-game time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << "|" << (secs < 10 ? ":0" : ":")
 		<< secs << " time since update: " << (timeGetTime() - change_time)  << " frame time: " << MISC::GET_FRAME_TIME();
 
-	DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);
+	DrawGameText(0, 0, dbg.str(), 255, 0, 0, 255);*/
 	last_value = mins;
 #endif
 
 }
 
-void LongerDays::UpdateGameTime()
+/*
+	From R* script 'script_rel/gang1.c':
+	if (CLOCK::GET_CLOCK_HOURS() != 21)
+	{
+		CLOCK::SET_CLOCK_TIME(21, 0, 0);
+		CLOCK::PAUSE_CLOCK(true, 0);
+	}
+*/
+
+bool LongerDays::ShouldUpdate()
 {
 	Player id = PLAYER::PLAYER_ID();
-	bool should_pause_clock = (PLAYER::IS_PLAYER_CONTROL_ON(id) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(id)) && !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
-	CLOCK::PAUSE_CLOCK(should_pause_clock, should_pause_clock);
-	
 
+	bool has_control = PLAYER::IS_PLAYER_CONTROL_ON(id) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(id);
+	bool is_playing = !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
+	bool is_mission = MISC::GET_MISSION_FLAG();
+
+	bool should_update_time = is_playing && has_control && !is_mission;
+	
+	Vector3 coords = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), 0, 0);
+	if (BUILTIN::VDIST2(coords.x, coords.y, coords.z, -347.36, 699.83, 117.162) <= 75
+		|| BUILTIN::VDIST2(coords.x, coords.y, coords.z, 2697.13, -1353.49, 49.45) <= 95)
+	{
+		return false;
+	}
+
+	return is_playing && has_control && !is_mission;
+}
+
+void LongerDays::UpdateGameTime()
+{
 	static float hours = (float)CLOCK::GET_CLOCK_HOURS();
 	static float minutes = (float)CLOCK::GET_CLOCK_MINUTES();
 	static float seconds = (float)CLOCK::GET_CLOCK_SECONDS();
 
-	if (!should_pause_clock)
+	bool should_update_time = ShouldUpdate();
+	if (!should_update_time)
 	{
 		hours = (float)CLOCK::GET_CLOCK_HOURS();
 		minutes = (float)CLOCK::GET_CLOCK_MINUTES();
@@ -102,7 +146,7 @@ void LongerDays::UpdateGameTime()
 		return;
 	}
 
-	seconds += MISC::GET_FRAME_TIME() * ( 60 / GetTimeFromHour(hours));
+	seconds += MISC::GET_FRAME_TIME() * (60 / GetTimeFromHour(hours));
 
 	if (seconds >= 59.f)
 	{
@@ -121,7 +165,11 @@ void LongerDays::UpdateGameTime()
 		hours = 0.f;
 	}
 
-	CLOCK::SET_CLOCK_TIME((int)hours, (int)minutes, (int)seconds);
+	if (GRAPHICS::GET_TV_CHANNEL() == -1)
+	{
+		CLOCK::SET_CLOCK_TIME((int)hours, (int)minutes, (int)seconds);
+	}
+	
 }
 
 float LongerDays::GetTimeFromHour(int hour)

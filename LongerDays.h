@@ -13,6 +13,8 @@ public:
 	int day_start = 7;
 	int day_end = 19;
 private:
+	bool ShouldUpdate();
+
 	void UpdateGameTime();
 	float GetTimeFromHour(int hour);
 };
