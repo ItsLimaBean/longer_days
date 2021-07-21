@@ -51,7 +51,6 @@ void LongerDays::Tick()
 #ifdef _DEBUG // This code will only be compiled for Debug
 
 	static int key_tmr = timeGetTime();
-	static bool pause_time = false;
 	if (IsKeyPressed(0x76) && (timeGetTime() - key_tmr) >= 200) // F7
 	{
 		key_tmr = timeGetTime();
