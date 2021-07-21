@@ -106,7 +106,7 @@ bool LongerDays::ShouldUpdate()
 
 	bool has_control = PLAYER::IS_PLAYER_CONTROL_ON(id) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(id)
 		|| PAD::IS_CONTROL_ENABLED(0, 0xA987235F) || PAD::IS_CONTROL_ENABLED(0, 0xD82E0BD2); //     FrontendPause = 0xD82E0BD2,    LookLr = 0xA987235F,
-	DrawGameText(0.5, 0.2, std::to_string(has_control));
+
 	bool is_playing = !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN();
 	bool is_mission = MISC::GET_MISSION_FLAG();
 	bool near_show = BUILTIN::VDIST2(coords.x, coords.y, coords.z, -347.36f, 699.83f, 117.162f) <= 75.f || BUILTIN::VDIST2(coords.x, coords.y, coords.z, 2697.13f, -1353.49f, 49.45f) <= 95.f;
