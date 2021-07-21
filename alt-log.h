@@ -10,7 +10,7 @@
 class Log : protected std::ostream
 {
 public:
-	enum Color
+	enum class Color
 	{
 		BLACK, LBLACK,
 		RED, LRED,
@@ -90,23 +90,23 @@ public:
 	Log& operator<<(LogManip val) { return Put(val); }
 
 	// Manipulators
-	static Log& Black(Log& log) { return log.PutColor(BLACK); }
-	static Log& LBlack(Log& log) { return log.PutColor(LBLACK); }
-	static Log& Red(Log& log) { return log.PutColor(RED); }
-	static Log& LRed(Log& log) { return log.PutColor(LRED); }
-	static Log& Green(Log& log) { return log.PutColor(GREEN); }
-	static Log& LGreen(Log& log) { return log.PutColor(LGREEN); }
-	static Log& Blue(Log& log) { return log.PutColor(BLUE); }
-	static Log& LBlue(Log& log) { return log.PutColor(LBLUE); }
-	static Log& Yellow(Log& log) { return log.PutColor(YELLOW); }
-	static Log& LYellow(Log& log) { return log.PutColor(LYELLOW); }
-	static Log& Magenta(Log& log) { return log.PutColor(MAGENTA); }
-	static Log& LMagenta(Log& log) { return log.PutColor(LMAGENTA); }
-	static Log& Cyan(Log& log) { return log.PutColor(CYAN); }
-	static Log& LCyan(Log& log) { return log.PutColor(LCYAN); }
-	static Log& White(Log& log) { return log.PutColor(WHITE); }
-	static Log& LWhite(Log& log) { return log.PutColor(LWHITE); }
-	static Log& Endl(Log& log) { return log.Put(std::endl).Put(std::dec).PutColor(WHITE); }
+	static Log& Black(Log& log) { return log.PutColor(Color::BLACK); }
+	static Log& LBlack(Log& log) { return log.PutColor(Color::LBLACK); }
+	static Log& Red(Log& log) { return log.PutColor(Color::RED); }
+	static Log& LRed(Log& log) { return log.PutColor(Color::LRED); }
+	static Log& Green(Log& log) { return log.PutColor(Color::GREEN); }
+	static Log& LGreen(Log& log) { return log.PutColor(Color::LGREEN); }
+	static Log& Blue(Log& log) { return log.PutColor(Color::BLUE); }
+	static Log& LBlue(Log& log) { return log.PutColor(Color::LBLUE); }
+	static Log& Yellow(Log& log) { return log.PutColor(Color::YELLOW); }
+	static Log& LYellow(Log& log) { return log.PutColor(Color::LYELLOW); }
+	static Log& Magenta(Log& log) { return log.PutColor(Color::MAGENTA); }
+	static Log& LMagenta(Log& log) { return log.PutColor(Color::LMAGENTA); }
+	static Log& Cyan(Log& log) { return log.PutColor(Color::CYAN); }
+	static Log& LCyan(Log& log) { return log.PutColor(Color::LCYAN); }
+	static Log& White(Log& log) { return log.PutColor(Color::WHITE); }
+	static Log& LWhite(Log& log) { return log.PutColor(Color::LWHITE); }
+	static Log& Endl(Log& log) { return log.Put(std::endl).Put(std::dec).PutColor(Color::WHITE); }
 	static Log& Time(Log& log) { return log.PutTime(); }
 
 	struct Log_Base
@@ -180,52 +180,52 @@ public:
 
 			switch (val)
 			{
-				case BLACK:
+				case Color::BLACK:
 					col = 0;
 					break;
-				case LBLACK:
+				case Color::LBLACK:
 					col = FOREGROUND_INTENSITY;
 					break;
-				case RED:
+				case Color::RED:
 					col = FOREGROUND_RED;
 					break;
-				case LRED:
+				case Color::LRED:
 					col = FOREGROUND_RED | FOREGROUND_INTENSITY;
 					break;
-				case GREEN:
+				case Color::GREEN:
 					col = FOREGROUND_GREEN;
 					break;
-				case LGREEN:
+				case Color::LGREEN:
 					col = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 					break;
-				case BLUE:
+				case Color::BLUE:
 					col = FOREGROUND_BLUE;
 					break;
-				case LBLUE:
+				case Color::LBLUE:
 					col = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 					break;
-				case YELLOW:
+				case Color::YELLOW:
 					col = FOREGROUND_RED | FOREGROUND_GREEN;
 					break;
-				case LYELLOW:
+				case Color::LYELLOW:
 					col = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 					break;
-				case MAGENTA:
+				case Color::MAGENTA:
 					col = FOREGROUND_RED | FOREGROUND_BLUE;
 					break;
-				case LMAGENTA:
+				case Color::LMAGENTA:
 					col = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 					break;
-				case CYAN:
+				case Color::CYAN:
 					col = FOREGROUND_GREEN | FOREGROUND_BLUE;
 					break;
-				case LCYAN:
+				case Color::LCYAN:
 					col = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 					break;
-				case WHITE:
+				case Color::WHITE:
 					col = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
 					break;
-				case LWHITE:
+				case Color::LWHITE:
 					col = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
 					break;
 			}

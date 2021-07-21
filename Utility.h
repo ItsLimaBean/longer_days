@@ -46,7 +46,7 @@ static std::wstring GetModulePath(HMODULE module)
 	std::wstring modulePath = std::wstring(buffer.begin(), buffer.end());
 
 	size_t slashPos = modulePath.size();
-	for (int i = modulePath.size() - 1; i >= 0; --i)
+	for (size_t i = modulePath.size() - 1; i >= 0; --i)
 	{
 		if (modulePath[i] == L'/' || modulePath[i] == L'\\')
 		{
@@ -59,11 +59,11 @@ static std::wstring GetModulePath(HMODULE module)
 	return moduleDir;
 }
 
-static void DrawGameText(float x, float y, std::string str, uint8_t r, uint8_t g, uint8_t b, uint8_t a, bool centre = false)
+static void DrawGameText(float x, float y, std::string str, bool centre = false)
 {
 	HUD::SET_TEXT_SCALE(0.342f, 0.342f);
 	HUD::SET_TEXT_CENTRE(centre);
-	HUD::_SET_TEXT_COLOR(r, g, b, a);
+	HUD::_SET_TEXT_COLOR(255, 0, 0, 255);
 	
 	const char* text = MISC::_CREATE_VAR_STRING(10, "LITERAL_STRING", str.c_str());
 	HUD::_DRAW_TEXT(text, x, y);
