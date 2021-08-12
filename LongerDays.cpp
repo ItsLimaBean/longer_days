@@ -41,10 +41,8 @@ void LongerDays::Tick()
 
 		if (timeGetTime() >= timeout)
 			show_welcome = false;
-		
-		std::ostringstream stream;
-		stream << "Longer Days " << VERSION;
-		DrawGameText(0.5f, 0.009f, stream.str(), true);
+
+		DrawGameText(0.5f, 0.009f, "Longer Days " VERSION, true);
 	}
 
 	UpdateGameTime();
