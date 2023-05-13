@@ -1,36 +1,38 @@
 ﻿#include "pch.h"
 
-LongerDays longer_days;
-
-void ScriptMain()
-{
-	while (true)
-	{
-		longer_days.Tick();
-		WAIT(0);
-	}
-}
-
 BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 {
+	using namespace longer_days;
 	switch (reason)
 	{
 		case DLL_PROCESS_ATTACH:
 		{
-			std::wstring _moduleDir = GetModulePath(module);
+			Log::Push(new Log::FileStream(L".\\longer_days.log"));
+			Log::Info << "Longer Days " VERSION << Log::Endl;
 
-			std::wstring ini_file = _moduleDir + L"/longer_days.ini";
-			std::wstring logPath = _moduleDir + L"/longer_days_log.txt";
+			if (!config::get().load())
+			{
+				return FALSE;
+			}
 
-			Log::Push(new Log::FileStream(logPath));
-			longer_days.ReadConfig(ini_file);
-
-			scriptRegister(module, &ScriptMain);
+			scriptRegister(module, &initialize_script);
+#ifdef _DEBUG
+			if (AttachConsole(GetCurrentProcessId()) == false)
+			{
+				AllocConsole();
+			}
+			Log::Push(new Log::ConsoleStream());
+#endif
 			break;
 		}
 		case DLL_PROCESS_DETACH:
 		{
+			g_script.cleanup();
 			scriptUnregister(module);
+			Log::Info << "Unregistered script!" << Log::Endl;
+#ifdef _DEBUG
+			FreeConsole();
+#endif
 			break;
 		}
 		default:

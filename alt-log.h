@@ -165,7 +165,7 @@ public:
 		{
 #ifdef _WIN32
 			static HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			WriteConsoleA(hConsole, val.data(), val.size(), NULL, NULL);
+			WriteConsoleA(hConsole, val.data(), static_cast<DWORD>(val.size()), NULL, NULL);
 #else
 			std::cout << val;
 #endif // _WIN32

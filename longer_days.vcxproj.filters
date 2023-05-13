@@ -10,6 +10,9 @@
     <Filter Include="Util">
       <UniqueIdentifier>{edfd3981-c189-4c5d-a2a4-9651237a9227}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Minhook">
+      <UniqueIdentifier>{9fdae5c0-eac8-43d0-9066-9cf33183a44e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="api\natives.h">
@@ -17,9 +20,6 @@
     </ClInclude>
     <ClInclude Include="Utility.h">
       <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="LongerDays.h">
-      <Filter>LongerDays</Filter>
     </ClInclude>
     <ClInclude Include="alt-log.h">
       <Filter>Util</Filter>
@@ -39,15 +39,30 @@
     <ClInclude Include="api\main.h">
       <Filter>API</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleIni.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>LongerDays</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>LongerDays</Filter>
+    </ClInclude>
+    <ClInclude Include="Pattern.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Minhook.h">
+      <Filter>Minhook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>LongerDays</Filter>
     </ClCompile>
-    <ClCompile Include="LongerDays.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>LongerDays</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="script.cpp">
       <Filter>LongerDays</Filter>
     </ClCompile>
   </ItemGroup>

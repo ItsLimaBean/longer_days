@@ -12,9 +12,13 @@
 #include "api/natives.h"
 #include "alt-log.h"
 #include "Utility.h"
-#include "LongerDays.h"
+
+#include "config.h"
+#include "script.h"
+#include "Pattern.h"
+#include "Minhook.h"
 
 #include <timeapi.h>
 #pragma comment(lib, "Winmm.lib")
 
-#define VERSION "v2.0.2"
+#define VERSION "v3.0.0"
