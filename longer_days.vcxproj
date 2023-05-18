@@ -110,15 +110,19 @@
     <ClInclude Include="api\natives.h" />
     <ClInclude Include="api\types.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="memory.h" />
     <ClInclude Include="Minhook.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="SimpleIni.h" />
+    <ClInclude Include="singleton.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="memory.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="script.cpp" />
   </ItemGroup>

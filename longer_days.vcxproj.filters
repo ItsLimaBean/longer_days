@@ -54,6 +54,12 @@
     <ClInclude Include="Minhook.h">
       <Filter>Minhook</Filter>
     </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>LongerDays</Filter>
+    </ClInclude>
+    <ClInclude Include="singleton.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -63,6 +69,12 @@
       <Filter>LongerDays</Filter>
     </ClCompile>
     <ClCompile Include="script.cpp">
+      <Filter>LongerDays</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.cpp">
+      <Filter>LongerDays</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp">
       <Filter>LongerDays</Filter>
     </ClCompile>
   </ItemGroup>

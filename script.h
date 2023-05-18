@@ -1,12 +1,16 @@
 #pragma once
+#include "singleton.h"
 
 namespace longer_days
 {
 	void initialize_script();
 
-	class script
+	class script final : public singleton<script>
 	{
 		friend struct hooks;
+	
+	public:
+		script(tkn) {};
 
 	public:
 		void initialize();
@@ -28,9 +32,7 @@ namespace longer_days
 
 		int m_current_hour{};
 
-		config& m_config = config::get();
-
-		PVOID m_get_ms_per_game_min;
+		PVOID m_get_ms_per_game_min{};
 
 		static constexpr float hour_multiplier[] = {
 			1.99f,
@@ -59,12 +61,4 @@ namespace longer_days
 			1.76f
 		};
 	};
-
-	struct hooks
-	{
-		inline static unsigned int(__fastcall* get_ms_per_game_min_orig)();
-		static unsigned int get_ms_per_game_min_hook();
-	};
-
-	inline script g_script{};
 }

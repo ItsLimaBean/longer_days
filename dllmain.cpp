@@ -15,6 +15,15 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 				return FALSE;
 			}
 
+			memory& memory = memory::get();
+			if (memory.scan())
+			{
+				if (!memory.enable_hook())
+				{
+					return FALSE;
+				}
+			}
+
 			scriptRegister(module, &initialize_script);
 #ifdef _DEBUG
 			if (AttachConsole(GetCurrentProcessId()) == false)
@@ -27,7 +36,8 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 		}
 		case DLL_PROCESS_DETACH:
 		{
-			g_script.cleanup();
+			memory::get().disable_hook();
+			script::get().cleanup();
 			scriptUnregister(module);
 			Log::Info << "Unregistered script!" << Log::Endl;
 #ifdef _DEBUG

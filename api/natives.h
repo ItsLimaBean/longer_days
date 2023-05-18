@@ -5302,12 +5302,12 @@ namespace _NAMESPACE59
 	static Any _0x1840F3B30ED0105F(Any p0) { return invoke<Any>(0x1840F3B30ED0105F, p0); } // 0x1840F3B30ED0105F b1207
 	static Any _0x3CF46F55C6585590() { return invoke<Any>(0x3CF46F55C6585590); } // 0x3CF46F55C6585590 b1207
 	static Any _0x1431540BCA1A1BD2() { return invoke<Any>(0x1431540BCA1A1BD2); } // 0x1431540BCA1A1BD2 b1207
-	static void _0xED4B0C1057892B2E(Any p0, Any p1, Any p2, Any p3) { invoke<Void>(0xED4B0C1057892B2E, p0, p1, p2, p3); } // 0xED4B0C1057892B2E b1207
-	static void _0x9BB83C4DD7BE0802(Any p0, Any p1, Any p2, Any p3, Any p4) { invoke<Void>(0x9BB83C4DD7BE0802, p0, p1, p2, p3, p4); } // 0x9BB83C4DD7BE0802 b1207
+	static void _0xED4B0C1057892B2E(void* p0, Any p1, Any p2, const char* p3) { invoke<Void>(0xED4B0C1057892B2E, p0, p1, p2, p3); } // 0xED4B0C1057892B2E b1207
+	static void _0x9BB83C4DD7BE0802(void* p0, Any p1, Any p2, const char* p3, Any p4) { invoke<Void>(0x9BB83C4DD7BE0802, p0, p1, p2, p3, p4); } // 0x9BB83C4DD7BE0802 b1207
 	static void _0xE8346E62FD7FB962() { invoke<Void>(0xE8346E62FD7FB962); } // 0xE8346E62FD7FB962 b1207
 	static void _0xC0ABF784590798A9(Any p0) { invoke<Void>(0xC0ABF784590798A9, p0); } // 0xC0ABF784590798A9 b1207
-	static Any _0xB00CE33465B5406D(Any p0, Any p1) { return invoke<Any>(0xB00CE33465B5406D, p0, p1); } // 0xB00CE33465B5406D b1207
-	static void _0x529B9CCD0972AF4D(Any p0, Any p1) { invoke<Void>(0x529B9CCD0972AF4D, p0, p1); } // 0x529B9CCD0972AF4D b1207
+	static Any _0xB00CE33465B5406D(Any p0, const char* p1) { return invoke<Any>(0xB00CE33465B5406D, p0, p1); } // 0xB00CE33465B5406D b1207
+	static void _0x529B9CCD0972AF4D(int* p0, const char* p1) { invoke<Void>(0x529B9CCD0972AF4D, p0, p1); } // 0x529B9CCD0972AF4D b1207
 	static void _0x529B9CCD0972AF4E(Any p0, Any p1) { invoke<Void>(0x529B9CCD0972AF4E, p0, p1); } // 0x529B9CCD0972AF4E b1207
 	static void _0xB25B5A375BE5BE26(Any p0, Any p1) { invoke<Void>(0xB25B5A375BE5BE26, p0, p1); } // 0xB25B5A375BE5BE26 b1207
 	static void _0x35DEFECAE36D4FAE(Any p0, Any p1) { invoke<Void>(0x35DEFECAE36D4FAE, p0, p1); } // 0x35DEFECAE36D4FAE b1207
@@ -5316,7 +5316,7 @@ namespace _NAMESPACE59
 	static void _0x4845E7E7643A908C(Any p0, Any p1) { invoke<Void>(0x4845E7E7643A908C, p0, p1); } // 0x4845E7E7643A908C b1207
 	static void _0x186608A2AC6F9E88(Any p0, Any p1) { invoke<Void>(0x186608A2AC6F9E88, p0, p1); } // 0x186608A2AC6F9E88 b1207
 	static void _0x443174C20B8B9E7F(Any p0, Any p1, Any p2) { invoke<Void>(0x443174C20B8B9E7F, p0, p1, p2); } // 0x443174C20B8B9E7F b1207
-	static void _0x8E8FFB9E4AD051D2(Any p0, Any p1, Any p2, Any p3) { invoke<Void>(0x8E8FFB9E4AD051D2, p0, p1, p2, p3); } // 0x8E8FFB9E4AD051D2 b1207
+	static void _0x8E8FFB9E4AD051D2(void* p0, Any p1, const char* p2, Any p3) { invoke<Void>(0x8E8FFB9E4AD051D2, p0, p1, p2, p3); } // 0x8E8FFB9E4AD051D2 b1207
 	static void _0xE0B45E983BFC0768() { invoke<Void>(0xE0B45E983BFC0768); } // 0xE0B45E983BFC0768 b1207
 	static void _0x81F4E92BE3958364(Any p0, Any p1, Any p2) { invoke<Void>(0x81F4E92BE3958364, p0, p1, p2); } // 0x81F4E92BE3958364 b1207
 	static void _0xA844FEB5C22C2C74() { invoke<Void>(0xA844FEB5C22C2C74); } // 0xA844FEB5C22C2C74 b1207

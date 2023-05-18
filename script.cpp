@@ -4,11 +4,12 @@ namespace longer_days
 {
 	void initialize_script()
 	{
-		g_script.initialize();
+		script& script = script::get();
 
+		script.initialize();
 		while (true)
 		{
-			g_script.on_tick();
+			script.on_tick();
 			WAIT(0);
 		}
 	}
@@ -24,7 +25,7 @@ namespace longer_days
 			if (current_time > timeout)
 				m_show_initial = false;
 
-			if (m_config.m_show_welcome)
+			if (config::get().m_show_welcome)
 			{
 				draw_text(0.5f, 0.009f, "Longer Days " VERSION, true);
 			}
@@ -119,7 +120,7 @@ namespace longer_days
 		str.str(std::string()); str << "Current MS Per Game Min: " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE();
 		draw_text(0.0f, 0.33f, str.str());
 
-		str.str(std::string()); str << "Mode: " << (m_get_ms_per_game_min ? "Hook" : "Native");
+		str.str(std::string()); str << "Mode: " << (m_use_hook ? "Hook" : "Native");
 		draw_text(0.0f, 0.36f, str.str());
 
 		last_value = mins;
@@ -129,52 +130,25 @@ namespace longer_days
 
 	void script::cleanup()
 	{
-		if (m_use_hook)
-		{
-			MH_DisableHook(m_get_ms_per_game_min);
-			MH_RemoveHook(m_get_ms_per_game_min);
-			Log::Info << "Disabled 'get_ms_per_game_min' hook." << Log::Endl;
-		}
-		else
+		// This won't get called in a game thread, should be fine.
+		if (!m_use_hook)
 		{
 			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(2000);
 		}
-		
-		MH_Uninitialize();
-		Log::Info << "Uninitialized MinHook." << Log::Endl;
 	}
 
 	void script::initialize()
 	{
-		Log::Info << "Default MS per Game Minute " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << Log::Endl;
-		MH_Initialize();
-		Log::Info << "Initialized MinHook." << Log::Endl;
-
-		const char* pattern = m_config.m_get_ms_per_game_min_pattern.c_str();
-		m_get_ms_per_game_min = Signature(pattern).Scan().As<PVOID>();
-		uintptr_t offset = (uintptr_t)m_get_ms_per_game_min - Module(nullptr).Base().As<std::uintptr_t>();
-		if (m_get_ms_per_game_min && offset != 0)
-		{
-			Log::Info << "Found 'get_ms_per_game_min' at RDR2.exe+0x" << std::hex << std::uppercase << offset << std::nouppercase << "." << Log::Endl;
-
-			MH_CreateHook(m_get_ms_per_game_min, &hooks::get_ms_per_game_min_hook, (PVOID*)&hooks::get_ms_per_game_min_orig);
-			MH_EnableHook(m_get_ms_per_game_min);
-			Log::Info << "Enabled 'get_ms_per_game_min' hook." << Log::Endl;
-		}
-		else
-		{
-			m_use_hook = false;
-			Log::Warning << "Failed to 'find get_ms_per_game_min', defaulting to normal game time behaviour." << Log::Endl;
-			Log::Warning << "Please report this to the mod author alongside the version (Steam, Epic, Rockstar)." << Log::Endl;
-			Log::Warning << "Alternatively, you can update the pattern manually by changing 'get_ms_per_game_min' in longer_days.ini" << Log::Endl;
-			Log::Warning << "Current pattern: " << pattern << Log::Endl;
-		}
+		Log::Info << "Current ms per game minute: " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE() << "." << Log::Endl;
+		m_use_hook = memory::get().found_ptr();
+		Log::Info << "Time scaling mode: " << (m_use_hook ? "Hook" : "Native") << "." << Log::Endl;
 	}
 
 	int script::get_time_from_hour()
 	{
+		config& config = config::get();
 		int hour = m_current_hour;
-		return (hour >= m_config.m_day_start && hour <= m_config.m_day_end) ? m_config.m_day_time_speed : m_config.m_night_time_speed;
+		return (hour >= config.m_day_start && hour <= config.m_day_end) ? config.m_day_time_speed : config.m_night_time_speed;
 	}
 
 	void script::draw_text(float x, float y, std::string str, bool centre)
@@ -185,11 +159,5 @@ namespace longer_days
 
 		const char* text = MISC::_CREATE_VAR_STRING(10, "LITERAL_STRING", str.c_str());
 		HUD::_DRAW_TEXT(text, x, y);
-	}
-
-	// hooking this will cause the game to not scale time and to only use our value.
-	unsigned int hooks::get_ms_per_game_min_hook()
-	{
-		return g_script.m_enabled ? g_script.get_time_from_hour() : hooks::get_ms_per_game_min_orig();
 	}
 }
