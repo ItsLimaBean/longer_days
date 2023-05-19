@@ -32,8 +32,6 @@ namespace longer_days
 
 		int m_current_hour{};
 
-		PVOID m_get_ms_per_game_min{};
-
 		static constexpr float hour_multiplier[] = {
 			1.99f,
 			1.70f,
