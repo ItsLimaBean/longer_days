@@ -38,7 +38,7 @@ namespace longer_days
 		else
 		{
 			Log::Info << "Failed to load Longer Days config file!" << Log::Endl;
-			const char* message = "Faild to load Longer Days config file."
+			const char* message = "Failed to load Longer Days config file."
 				"Please ensure you have the file in the correct location and restart the game.";
 			MessageBoxA(NULL, message, "Longer Days Error", MB_OK | MB_ICONERROR);
 		}

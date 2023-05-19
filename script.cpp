@@ -48,6 +48,57 @@ namespace longer_days
 			|| PAD::IS_CONTROL_ENABLED(0, 0xA987235F) || PAD::IS_CONTROL_ENABLED(0, 0xD82E0BD2); //     FrontendPause = 0xD82E0BD2,    LookLr = 0xA987235F,
 		m_enabled = !is_mission && is_playing && has_control;
 
+		/* Why do what's below?
+		* Well, here's how time is calculated in RDR2.
+		* Function im referencing: LAB_14074e618 (1491.18)
+			
+			// first we calculate the difference between the games internal timer
+			// and the last time the in-game player time was updated
+			uint time_difference = (uint)(game_timer - last_time_update)
+
+			// now we loop until we can't add our ms_pergamemin onto the last_time_update
+			// without it being larger than of time difference
+			while (ms_pergamemin <= time_difference) {
+			  last_time_update = last_time_update + ms_pergamemin;
+
+			  // for each loop we increment the current time by 1 minute
+			  increment_time(&time_date_struct,0,1,0);
+			  local_hour = time_hour;
+			  local_min = time_min;
+			  local_sec = time_sec;
+			}
+			
+		* Finally there's some code that'll calculate the seconds.
+		* As you can see the game will play catchup if we go from a large ms_pergamemin to a small one.
+		* 60000 to 2000 would mean we could jump from 12:00:00 up to a maximum of 12:30:00 in one tick!
+		* So what we do is we just wait for a tick and restore the time before that tick,
+		* this should fix time jumping when we disable our custom timescale.
+		*/
+		static bool last_frame_enabled = !m_enabled;
+		if (m_enabled != last_frame_enabled)
+		{
+			last_frame_enabled = m_enabled;
+			if (!m_enabled)
+			{
+				int h = CLOCK::GET_CLOCK_HOURS();
+				int m = CLOCK::GET_CLOCK_MINUTES();
+				int s = CLOCK::GET_CLOCK_SECONDS();
+				std::uint32_t start_bitset = h << 12 | m << 6 | s;
+
+				int tries = 10;
+				while (tries > 0)
+				{
+					if (start_bitset != (CLOCK::GET_CLOCK_HOURS() << 12 | CLOCK::GET_CLOCK_MINUTES() << 6 | CLOCK::GET_CLOCK_SECONDS()))
+						break;
+
+					tries--;
+					WAIT(0);
+				}
+				Log::Info << "Tried to restore time to " << FORMAT_CLOCK(h, m, s) << ", from jump to " << FORMAT_CLOCK(CLOCK::GET_CLOCK_HOURS(), CLOCK::GET_CLOCK_MINUTES(), CLOCK::GET_CLOCK_SECONDS()) << " " << tries <<  "." << Log::Endl;
+				CLOCK::SET_CLOCK_TIME(h, m, s);
+			}
+		}
+
 		if (!m_use_hook && m_enabled)
 		{
 			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(static_cast<int>(get_time_from_hour() * hour_multiplier[m_current_hour]));
@@ -85,7 +136,6 @@ namespace longer_days
 		static int change_time = timeGetTime();
 		static int previous = 0;
 		int mins = CLOCK::GET_CLOCK_MINUTES();
-		int secs = CLOCK::GET_CLOCK_SECONDS();
 		if (last_value != mins)
 		{
 			previous = (timeGetTime() - change_time);
@@ -93,7 +143,7 @@ namespace longer_days
 		}
 
 		std::stringstream str;
-		str.str(std::string()); str << "Game Time: " << CLOCK::GET_CLOCK_HOURS() << (mins < 10 ? ":0" : ":") << mins << (secs < 10 ? ":0" : ":") << secs;
+		str.str(std::string()); str << "Game Time: " << FORMAT_CLOCK(CLOCK::GET_CLOCK_HOURS(), mins, CLOCK::GET_CLOCK_SECONDS());
 		draw_text(0.0f, 0.09f, str.str());
 
 		str.str(std::string()); str << "Last Update: " << (timeGetTime() - change_time) << "ms ago";

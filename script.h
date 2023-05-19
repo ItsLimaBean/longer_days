@@ -1,5 +1,7 @@
 #pragma once
 #include "singleton.h"
+#define _F std::setfill('0') << std::setw(2)
+#define FORMAT_CLOCK(h, m, s) _F << h << ":" << _F << m << ":" << _F << s
 
 namespace longer_days
 {
