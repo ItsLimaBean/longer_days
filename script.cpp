@@ -48,54 +48,32 @@ namespace longer_days
 			|| PAD::IS_CONTROL_ENABLED(0, 0xA987235F) || PAD::IS_CONTROL_ENABLED(0, 0xD82E0BD2); //     FrontendPause = 0xD82E0BD2,    LookLr = 0xA987235F,
 		m_enabled = !is_mission && is_playing && has_control;
 
-		/* Why do what's below?
-		* Well, here's how time is calculated in RDR2.
-		* Function im referencing: LAB_14074e618 (1491.18)
-			
-			// first we calculate the difference between the games internal timer
-			// and the last time the in-game player time was updated
-			uint time_difference = (uint)(game_timer - last_time_update)
+#if defined(_DEBUG) && defined(MANUAL_START_STOP)
+		static bool _do = true;
+		m_enabled = _do;
+#endif
 
-			// now we loop until we can't add our ms_pergamemin onto the last_time_update
-			// without it being larger than of time difference
-			while (ms_pergamemin <= time_difference) {
-			  last_time_update = last_time_update + ms_pergamemin;
-
-			  // for each loop we increment the current time by 1 minute
-			  increment_time(&time_date_struct,0,1,0);
-			  local_hour = time_hour;
-			  local_min = time_min;
-			  local_sec = time_sec;
-			}
-			
-		* Finally there's some code that'll calculate the seconds.
-		* As you can see the game will play catchup if we go from a large ms_pergamemin to a small one.
-		* 60000 to 2000 would mean we could jump from 12:00:00 up to a maximum of 12:30:00 in one tick!
-		* So what we do is we just wait for a tick and restore the time before that tick,
-		* this should fix time jumping when we disable our custom timescale.
-		*/
 		static bool last_frame_enabled = !m_enabled;
 		if (m_enabled != last_frame_enabled)
 		{
 			last_frame_enabled = m_enabled;
 			if (!m_enabled)
 			{
-				int h = CLOCK::GET_CLOCK_HOURS();
-				int m = CLOCK::GET_CLOCK_MINUTES();
-				int s = CLOCK::GET_CLOCK_SECONDS();
-				std::uint32_t start_bitset = h << 12 | m << 6 | s;
-
-				int tries = 10;
-				while (tries > 0)
+				// Calling _SET_MILLISECONDS_PER_GAME_MINUTE with a value of 9999999
+				// causes the two timers that calculate time to be equal the next time you call 
+				// _SET_MILLISECONDS_PER_GAME_MINUTE, this should be a better way of fixing time jumps!
+				CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(9999999);
+				CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(2000);
+				Log::Info << "Mod disabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << Log::Endl;
+				if (is_mission)
 				{
-					if (start_bitset != (CLOCK::GET_CLOCK_HOURS() << 12 | CLOCK::GET_CLOCK_MINUTES() << 6 | CLOCK::GET_CLOCK_SECONDS()))
-						break;
-
-					tries--;
-					WAIT(0);
+					const char* mission_label = get_current_mission_label();
+					Log::Info << "Mission: " << mission_label << " (" << HUD::_GET_LABEL_TEXT(mission_label) << ")." << Log::Endl;
 				}
-				Log::Info << "Tried to restore time to " << FORMAT_CLOCK(h, m, s) << ", from jump to " << FORMAT_CLOCK(CLOCK::GET_CLOCK_HOURS(), CLOCK::GET_CLOCK_MINUTES(), CLOCK::GET_CLOCK_SECONDS()) << " " << tries <<  "." << Log::Endl;
-				CLOCK::SET_CLOCK_TIME(h, m, s);
+			}
+			else
+			{
+				Log::Info << "Mod enabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << Log::Endl;
 			}
 		}
 
@@ -132,6 +110,15 @@ namespace longer_days
 			}
 		}
 
+#if defined(_DEBUG) && defined(MANUAL_START_STOP)
+		if (IsKeyPressed(0x78) && (timeGetTime() - key_tmr) >= 200) // F9
+		{
+			key_tmr = timeGetTime();
+			_do = !_do;
+		}
+#endif
+
+
 		static int last_value;
 		static int change_time = timeGetTime();
 		static int previous = 0;
@@ -143,6 +130,12 @@ namespace longer_days
 		}
 
 		std::stringstream str;
+
+#if defined(_DEBUG) && defined(MANUAL_START_STOP)
+		str.str(std::string()); str << "MANUAL START/STOP ENABLED";
+		draw_text(0.0f, 0.06f, str.str());
+#endif
+
 		str.str(std::string()); str << "Game Time: " << FORMAT_CLOCK(CLOCK::GET_CLOCK_HOURS(), mins, CLOCK::GET_CLOCK_SECONDS());
 		draw_text(0.0f, 0.09f, str.str());
 
@@ -183,6 +176,7 @@ namespace longer_days
 		// This won't get called in a game thread, should be fine.
 		if (!m_use_hook)
 		{
+			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(9999999);
 			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(2000);
 		}
 	}
@@ -199,6 +193,13 @@ namespace longer_days
 		config& config = config::get();
 		int hour = m_current_hour;
 		return (hour >= config.m_day_start && hour <= config.m_day_end) ? config.m_day_time_speed : config.m_night_time_speed;
+	}
+
+	const char* script::get_current_mission_label()
+	{
+		// This global hasn't changed in 3 years, i doubt it'll ever change again.
+		return getGameVersion() == eGameVersion::VER_AUTO ? (const char*)getGlobalPtr(1879514 + 2) : "";
+		
 	}
 
 	void script::draw_text(float x, float y, std::string str, bool centre)

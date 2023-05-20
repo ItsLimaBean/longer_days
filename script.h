@@ -23,6 +23,7 @@ namespace longer_days
 		int get_time_from_hour();
 
 	private:
+		const char* get_current_mission_label();
 		void draw_text(float x, float y, std::string str, bool centre = false);
 
 	protected:
