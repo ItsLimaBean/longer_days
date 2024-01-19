@@ -15,7 +15,7 @@ namespace longer_days
 			m_night_time_speed = abs(static_cast<int>(night_time * 1000.0f));
 
 			m_day_start = m_ini.GetLongValue("settings", "day_start", 6);
-			m_day_end = m_ini.GetLongValue("settings", "day_start", 19);
+			m_day_end = m_ini.GetLongValue("settings", "day_end", 19);
 
 			m_show_welcome = m_ini.GetBoolValue("settings", "show_welcome", true);
 
