@@ -67,8 +67,7 @@ namespace longer_days
 				Log::Info << "Mod disabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << Log::Endl;
 				if (is_mission)
 				{
-					const char* mission_label = get_current_mission_label();
-					Log::Info << "Mission: " << mission_label << " (" << HUD::_GET_LABEL_TEXT(mission_label) << ")." << Log::Endl;
+					try_log_active_mission();
 				}
 			}
 			else
@@ -171,6 +170,27 @@ namespace longer_days
 
 	}
 
+	void script::try_log_active_mission()
+	{
+		__try
+		{
+			log_active_mission();
+		}
+		__except (1)
+		{
+			Log::Warning << "Encountered an exception when trying to read mission name." << Log::Endl;
+		}
+	}
+
+	// This exists since object unwinding
+	void script::log_active_mission()
+	{
+		if (std::string mission_label = get_current_mission_label(); mission_label.size() > 0)
+		{
+			Log::Info << "Mission: " << mission_label << " (" << HUD::_GET_LABEL_TEXT(mission_label.c_str()) << ")." << Log::Endl;
+		}
+	}
+
 	void script::cleanup()
 	{
 		// This won't get called in a game thread, should be fine.
@@ -195,10 +215,10 @@ namespace longer_days
 		return (hour >= config.m_day_start && hour <= config.m_day_end) ? config.m_day_time_speed : config.m_night_time_speed;
 	}
 
-	const char* script::get_current_mission_label()
+	const std::string script::get_current_mission_label()
 	{
 		// This global hasn't changed in 3 years, i doubt it'll ever change again.
-		return getGameVersion() == eGameVersion::VER_AUTO ? (const char*)getGlobalPtr(1879514 + 2) : "";
+		return getGameVersion() == eGameVersion::VER_AUTO ? std::string(reinterpret_cast<char*>(getGlobalPtr(1879514 + 2))) : "";
 		
 	}
 

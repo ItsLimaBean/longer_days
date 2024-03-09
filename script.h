@@ -17,13 +17,15 @@ namespace longer_days
 	public:
 		void initialize();
 		void on_tick();
+		void try_log_active_mission();
+		void log_active_mission();
 		void cleanup();
 
 	protected:
 		int get_time_from_hour();
 
 	private:
-		const char* get_current_mission_label();
+		const std::string get_current_mission_label();
 		void draw_text(float x, float y, std::string str, bool centre = false);
 
 	protected:
