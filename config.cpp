@@ -11,6 +11,8 @@ namespace longer_days
 			float day_time = static_cast<float>(std::atof(m_ini.GetValue("settings", "day_time", "2.0")));
 			float night_time = static_cast<float>(std::atof(m_ini.GetValue("settings", "night_time", "2.0")));
 
+			m_weight_retention_multiplier = static_cast<float>(std::atof(m_ini.GetValue("settings", "weight_retention_multiplier", "-10.0")));
+
 			m_day_time_speed = abs(static_cast<int>(day_time * 1000.0f));
 			m_night_time_speed = abs(static_cast<int>(night_time * 1000.0f));
 
@@ -28,11 +30,25 @@ namespace longer_days
 			Log::Info << "Day Ends: " << m_day_end << Log::Endl;
 			Log::Info << "Show Welcome: " << m_show_welcome << Log::Endl;
 			Log::Info << "get_ms_per_game_min pattern: " << m_get_ms_per_game_min_pattern << Log::Endl;
+			Log::Info << "Weight Retention Multiplier: " << m_weight_retention_multiplier << Log::Endl;
 
+			// Versioning
 			if (m_get_ms_per_game_min_pattern == "NULL")
 			{
 				Log::Warning << "Missing 'get_ms_per_game_min' pattern!" << Log::Endl;
 				Log::Warning << "Make sure to use the most up to date ini file." << Log::Endl;
+				Log::Warning << "The mod will continue to work, but please download the newest one from nexus mods." << Log::Endl;
+
+				m_get_ms_per_game_min_pattern = "48 83 EC 58 F3 0F 10 05 ? ? ? ? 0F 2E 05";
+			}
+
+			if (m_weight_retention_multiplier < 1.0f)
+			{
+				Log::Warning << "Invalid 'm_weight_retention_multiplier' config value!" << Log::Endl;
+				Log::Warning << "Make sure to use the most up to date ini file." << Log::Endl;
+				Log::Warning << "The mod will continue to work, but please download the newest one from nexus mods." << Log::Endl;
+
+				m_weight_retention_multiplier = 1.0f;
 			}
 		}
 		else

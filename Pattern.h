@@ -16,7 +16,7 @@ public:
 	* \brief Constructs the object with an integral pointer
 	* \param p The integral pointer to initialize the object with
 	*/
-	const explicit MemoryHandle(std::uintptr_t p) :
+	explicit MemoryHandle(std::uintptr_t p) :
 		m_Ptr(reinterpret_cast<void*>(p))
 	{
 	}

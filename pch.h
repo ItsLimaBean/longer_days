@@ -23,4 +23,4 @@
 #include <timeapi.h>
 #pragma comment(lib, "Winmm.lib")
 
-#define VERSION "v3.0.6"
+#define VERSION "v3.1.0"

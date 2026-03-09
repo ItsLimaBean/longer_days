@@ -26,6 +26,7 @@ namespace longer_days
 
 	private:
 		const std::string get_current_mission_label();
+		float* get_weight_retention_global_ptr();
 		void draw_text(float x, float y, std::string str, bool centre = false);
 
 	protected:

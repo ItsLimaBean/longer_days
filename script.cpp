@@ -1,5 +1,5 @@
 #include "pch.h"
-
+//#define _DEBUG 1
 namespace longer_days
 {
 	void initialize_script()
@@ -16,6 +16,8 @@ namespace longer_days
 
 	void script::on_tick()
 	{
+		const config& cfg = config::get();
+
 #pragma region Show Welcome
 		
 		if (m_show_initial)
@@ -25,7 +27,7 @@ namespace longer_days
 			if (current_time > timeout)
 				m_show_initial = false;
 
-			if (config::get().m_show_welcome)
+			if (cfg.m_show_welcome)
 			{
 				draw_text(0.5f, 0.009f, "Longer Days " VERSION, true);
 			}
@@ -56,15 +58,24 @@ namespace longer_days
 		static bool last_frame_enabled = !m_enabled;
 		if (m_enabled != last_frame_enabled)
 		{
+			float* weight_retention_ptr = get_weight_retention_global_ptr();
+
 			last_frame_enabled = m_enabled;
 			if (!m_enabled)
 			{
+				
+				// only reset the retention multiplier if its what we set it as
+				if (*weight_retention_ptr == cfg.m_weight_retention_multiplier)
+				{
+					*weight_retention_ptr = 0.0f;
+				}
+
 				// Calling _SET_MILLISECONDS_PER_GAME_MINUTE with a value of 9999999
 				// causes the two timers that calculate time to be equal the next time you call 
 				// _SET_MILLISECONDS_PER_GAME_MINUTE, this should be a better way of fixing time jumps!
 				CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(9999999);
 				CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(2000);
-				Log::Info << "Mod disabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << Log::Endl;
+				Log::Info << "Mod disabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << ", Weight retention value: " << *weight_retention_ptr << Log::Endl;
 				if (is_mission)
 				{
 					try_log_active_mission();
@@ -72,7 +83,12 @@ namespace longer_days
 			}
 			else
 			{
-				Log::Info << "Mod enabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << Log::Endl;
+				// Retention Multiplier should always be 1 less than what you want
+				// 	fVar0 = (fVar0 * (Global_40.f_11095.f_52 + 1f));
+				// As R* scripts adds 1 to the value before multiplying
+				
+				*weight_retention_ptr = fmaxf(0.0f, cfg.m_weight_retention_multiplier - 1.0f);
+				Log::Info << "Mod enabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << ", Weight retention value: " << *weight_retention_ptr << Log::Endl;
 			}
 		}
 
@@ -165,6 +181,17 @@ namespace longer_days
 		str.str(std::string()); str << "Mode: " << (m_use_hook ? "Hook" : "Native");
 		draw_text(0.0f, 0.36f, str.str());
 
+		float weight = *(float*)getGlobalPtr(40 + 11095 + 11 + (1 + 13));
+		str.str(std::string()); str << "Current Weight: " << weight;
+		draw_text(0.0f, 0.39f, str.str());
+
+		// Retention Multiplier should always be 1 less than what you want
+		// 	fVar0 = (fVar0 * (Global_40.f_11095.f_52 + 1f));
+		// As R* scripts add 1 to the value before multiplying
+		float retention_mutliplier = *get_weight_retention_global_ptr();
+		str.str(std::string()); str << "Weight Retention Multiplier (Global): " << retention_mutliplier << " | Config: " << config::get().m_weight_retention_multiplier;
+		draw_text(0.0f, 0.44f, str.str());
+
 		last_value = mins;
 #endif
 
@@ -220,6 +247,11 @@ namespace longer_days
 		// This global hasn't changed in 3 years, i doubt it'll ever change again.
 		return getGameVersion() == eGameVersion::VER_AUTO ? std::string(reinterpret_cast<char*>(getGlobalPtr(1879514 + 2))) : "";
 		
+	}
+
+	float* script::get_weight_retention_global_ptr()
+	{
+		return (float*)getGlobalPtr(40 + 11095 + 52);
 	}
 
 	void script::draw_text(float x, float y, std::string str, bool centre)

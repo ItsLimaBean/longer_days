@@ -17,6 +17,7 @@ namespace longer_days
 		int m_night_time_speed{};
 		int m_day_start{};
 		int m_day_end{};
+		float m_weight_retention_multiplier{};
 		bool m_show_welcome{};
 
 		std::string m_get_ms_per_game_min_pattern{};
