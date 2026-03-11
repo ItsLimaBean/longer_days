@@ -29,30 +29,30 @@ namespace longer_days
 
 			if (cfg.m_show_welcome)
 			{
-				draw_text(0.5f, 0.009f, "Longer Days " VERSION, true);
+				utility::draw_text(0.5f, 0.009f, "Longer Days " VERSION, true);
 			}
 
 			if (!m_use_hook)
 			{
-				draw_text(0.5f, 0.039f, "~COLOR_YELLOWSTRONG~An issue occured loading Longer Days, check 'longer_days.log' for more details.", true);
-				draw_text(0.5f, 0.069f, "~COLOR_YELLOWSTRONG~The mod will still continue to function.", true);
+				utility::draw_text(0.5f, 0.039f, "~COLOR_YELLOWSTRONG~An issue occured loading Longer Days, check 'longer_days.log' for more details.", true);
+				utility::draw_text(0.5f, 0.069f, "~COLOR_YELLOWSTRONG~The mod will still continue to function.", true);
 			}
 		}
 #pragma endregion
 		
 		m_current_hour = CLOCK::GET_CLOCK_HOURS();
 
-		Player player = PLAYER::PLAYER_ID();
-		bool is_mission = MISC::GET_MISSION_FLAG();
-		bool is_playing = !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN()
+		const Player player = PLAYER::PLAYER_ID();
+		const bool is_mission = MISC::GET_MISSION_FLAG();
+		const bool is_playing = !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN()
 			&& !DLC::GET_IS_LOADING_SCREEN_ACTIVE();
-		bool has_control = PLAYER::IS_PLAYER_CONTROL_ON(player) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(player)
-			|| PAD::IS_CONTROL_ENABLED(0, 0xA987235F) || PAD::IS_CONTROL_ENABLED(0, 0xD82E0BD2); //     FrontendPause = 0xD82E0BD2,    LookLr = 0xA987235F,
+		const bool has_control = PLAYER::IS_PLAYER_CONTROL_ON(player) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(player)
+			|| PAD::IS_CONTROL_ENABLED(0, 0xA987235F) || PAD::IS_CONTROL_ENABLED(0, 0x308588E6); //     FrontendPause = 0xD82E0BD2, 0x308588E6 = INPUT_GAME_MENU_CANCEL
 		m_enabled = !is_mission && is_playing && has_control;
 
 #if defined(_DEBUG) && defined(MANUAL_START_STOP)
-		static bool _do = true;
-		m_enabled = _do;
+		static bool manual_stop_start = true;
+		m_enabled = manual_stop_start;
 #endif
 
 		static bool last_frame_enabled = !m_enabled;
@@ -65,7 +65,7 @@ namespace longer_days
 			{
 				
 				// only reset the retention multiplier if its what we set it as
-				if (*weight_retention_ptr == cfg.m_weight_retention_multiplier)
+				if ((*weight_retention_ptr - 1.0f) == cfg.m_weight_retention_multiplier)
 				{
 					*weight_retention_ptr = 0.0f;
 				}
@@ -99,39 +99,33 @@ namespace longer_days
 
 #ifdef _DEBUG // This code will only be compiled for Debug
 
-		static int key_tmr = timeGetTime();
-		if (IsKeyPressed(0x76) && (timeGetTime() - key_tmr) >= 200) // F7
+		if (utility::is_key_pressed(0x76)) // F7
 		{
-			key_tmr = timeGetTime();
-			if (CLOCK::GET_CLOCK_HOURS() == 23)
-			{
-				CLOCK::SET_CLOCK_TIME(0, 0, 0);
-			}
-			else
-			{
-				CLOCK::SET_CLOCK_TIME(CLOCK::GET_CLOCK_HOURS() + 1, 0, 0);
-			}
+			CLOCK::SET_CLOCK_TIME((CLOCK::GET_CLOCK_HOURS() + 1) % 24, 0, 0);
 		}
-		if (IsKeyPressed(0x77) && (timeGetTime() - key_tmr) >= 200) // F8
+		if (utility::is_key_pressed(0x77)) // F8
 		{
-			key_tmr = timeGetTime();
-			if (CLOCK::GET_CLOCK_HOURS() == 0)
-			{
-				CLOCK::SET_CLOCK_TIME(23, 0, 0);
-			}
-			else
-			{
-				CLOCK::SET_CLOCK_TIME(CLOCK::GET_CLOCK_HOURS() - 1, 0, 0);
-			}
+			const int cur_hour = CLOCK::GET_CLOCK_HOURS();
+			const int new_hour = cur_hour <= 0 ? 23 : cur_hour - 1;
+			CLOCK::SET_CLOCK_TIME(new_hour, 0, 0);
 		}
 
 #if defined(_DEBUG) && defined(MANUAL_START_STOP)
-		if (IsKeyPressed(0x78) && (timeGetTime() - key_tmr) >= 200) // F9
+		if (utility::is_key_pressed(0x78)) // F9
 		{
-			key_tmr = timeGetTime();
-			_do = !_do;
+			manual_stop_start = !manual_stop_start;
 		}
 #endif
+		if (utility::is_key_pressed(0x79))
+		{
+			float* weight = (float*)getGlobalPtr(40 + 11095 + 11 + (1 + 13));
+			if (*weight < 0.0f)
+				*weight = 100.0f;
+			else
+				*weight = -75.0f;
+
+			*(int*)getGlobalPtr(1347477 + 201) = 1;
+		}
 
 
 		static int last_value;
@@ -144,53 +138,58 @@ namespace longer_days
 			change_time = timeGetTime();
 		}
 
-		std::stringstream str;
+		std::stringstream str{};
+		int line = 0;
 
 #if defined(_DEBUG) && defined(MANUAL_START_STOP)
-		str.str(std::string()); str << "MANUAL START/STOP ENABLED";
-		draw_text(0.0f, 0.06f, str.str());
+		str << "MANUAL START/STOP ENABLED";
+		debug::draw_text_line(line, str);
 #endif
 
-		str.str(std::string()); str << "Game Time: " << FORMAT_CLOCK(CLOCK::GET_CLOCK_HOURS(), mins, CLOCK::GET_CLOCK_SECONDS());
-		draw_text(0.0f, 0.09f, str.str());
+		str << "Game Time: " << FORMAT_CLOCK(CLOCK::GET_CLOCK_HOURS(), mins, CLOCK::GET_CLOCK_SECONDS());
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Last Update: " << (timeGetTime() - change_time) << "ms ago";
-		draw_text(0.0f, 0.12f, str.str());
+		str << "Last Update: " << (timeGetTime() - change_time) << "ms ago";
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Previous Update time: " << previous << "ms";
-		draw_text(0.0f, 0.15f, str.str());
+		str << "Previous Update time: " << previous << "ms";
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "FPS: " << (int)(1.0f / MISC::GET_FRAME_TIME()) << " (" << MISC::GET_FRAME_TIME() << "s)";
-		draw_text(0.0f, 0.18f, str.str());
+		str << "FPS: " << (int)(1.0f / MISC::GET_FRAME_TIME()) << " (" << MISC::GET_FRAME_TIME() << "s)";
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Is Rendering TV?: " << GRAPHICS::GET_TV_CHANNEL();
-		draw_text(0.0f, 0.21f, str.str());
+		str << "Is Rendering TV?: " << GRAPHICS::GET_TV_CHANNEL();
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Internal Time: " << timeGetTime();
-		draw_text(0.0f, 0.24f, str.str());
+		str << "Internal Time: " << timeGetTime();
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Enabled: " << m_enabled;
-		draw_text(0.0f, 0.27f, str.str());
+		str << "Enabled: " << m_enabled;
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Target Time: " << get_time_from_hour();
-		draw_text(0.0f, 0.30f, str.str());
+		str << "Target Time: " << get_time_from_hour();
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Current MS Per Game Min: " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE();
-		draw_text(0.0f, 0.33f, str.str());
+		str << "Current MS Per Game Min: " << CLOCK::GET_MILLISECONDS_PER_GAME_MINUTE();
+		debug::draw_text_line(line, str);
 
-		str.str(std::string()); str << "Mode: " << (m_use_hook ? "Hook" : "Native");
-		draw_text(0.0f, 0.36f, str.str());
+		str << "Mode: " << (m_use_hook ? "Hook" : "Native");
+		debug::draw_text_line(line, str);
 
 		float weight = *(float*)getGlobalPtr(40 + 11095 + 11 + (1 + 13));
-		str.str(std::string()); str << "Current Weight: " << weight;
-		draw_text(0.0f, 0.39f, str.str());
+		str << "Current Weight: " << weight;
+		debug::draw_text_line(line, str);
 
 		// Retention Multiplier should always be 1 less than what you want
 		// 	fVar0 = (fVar0 * (Global_40.f_11095.f_52 + 1f));
 		// As R* scripts add 1 to the value before multiplying
 		float retention_mutliplier = *get_weight_retention_global_ptr();
-		str.str(std::string()); str << "Weight Retention Multiplier (Global): " << retention_mutliplier << " | Config: " << config::get().m_weight_retention_multiplier;
-		draw_text(0.0f, 0.44f, str.str());
+		str << "Weight Retention Multiplier (Global): " << retention_mutliplier << " | Config: " << config::get().m_weight_retention_multiplier;
+		debug::draw_text_line(line, str);
+
+		const bool native_has_control = PLAYER::IS_PLAYER_CONTROL_ON(player) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(player);
+		str << "Has Control (Aggregate): " << has_control << ", Game Natvies: " << native_has_control << ", Controls: (0xA987235F, 0x308588E6): " << PAD::IS_CONTROL_ENABLED(0, 0xA987235F) << ", " << PAD::IS_CONTROL_ENABLED(0, 0x308588E6);
+		debug::draw_text_line(line, str);
 
 		last_value = mins;
 #endif
@@ -226,6 +225,8 @@ namespace longer_days
 			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(9999999);
 			CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(2000);
 		}
+
+		*get_weight_retention_global_ptr() = 0.0f;
 	}
 
 	void script::initialize()
@@ -251,16 +252,6 @@ namespace longer_days
 
 	float* script::get_weight_retention_global_ptr()
 	{
-		return (float*)getGlobalPtr(40 + 11095 + 52);
-	}
-
-	void script::draw_text(float x, float y, std::string str, bool centre)
-	{
-		HUD::SET_TEXT_SCALE(0.342f, 0.342f);
-		HUD::SET_TEXT_CENTRE(centre);
-		HUD::_SET_TEXT_COLOR(255, 0, 0, 255);
-
-		const char* text = MISC::_CREATE_VAR_STRING(10, "LITERAL_STRING", str.c_str());
-		HUD::_DRAW_TEXT(text, x, y);
+		return reinterpret_cast<float*>(getGlobalPtr(40 + 11095 + 52));
 	}
 }
