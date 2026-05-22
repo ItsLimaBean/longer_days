@@ -5,7 +5,9 @@ namespace longer_days
 {
 	bool config::load()
 	{
-		bool success = m_ini.LoadFile(m_config_file.c_str()) == SI_OK;
+		const SI_Error error = m_ini.LoadFile(m_config_file.c_str());
+		const bool success = error == SI_OK;
+		const int error_number = errno;
 		if (success)
 		{
 			float day_time = static_cast<float>(std::atof(m_ini.GetValue("settings", "day_time", "2.0")));
@@ -53,10 +55,17 @@ namespace longer_days
 		}
 		else
 		{
-			Log::Info << "Failed to load Longer Days config file!" << Log::Endl;
-			const char* message = "Failed to load Longer Days config file."
-				"Please ensure you have the file in the correct location and restart the game.";
-			MessageBoxA(NULL, message, "Longer Days Error", MB_OK | MB_ICONERROR);
+
+			std::stringstream str{};
+			str << "Failed to load Longer Days config file.\nPlease ensure you have the file in the correct location and restart the game.";
+
+			if (error == SI_FILE)
+			{
+				str << "\nError Details: " << std::strerror(error_number);
+			}
+
+			Log::Error << str.str() << Log::Endl;
+			MessageBoxA(NULL, str.str().c_str(), "Longer Days Error", MB_OK | MB_ICONERROR);
 		}
 
 		return success;

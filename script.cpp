@@ -46,9 +46,7 @@ namespace longer_days
 		const bool is_mission = MISC::GET_MISSION_FLAG();
 		const bool is_playing = !HUD::IS_PAUSE_MENU_ACTIVE() && CAM::IS_SCREEN_FADED_IN()
 			&& !DLC::GET_IS_LOADING_SCREEN_ACTIVE();
-		const bool has_control = PLAYER::IS_PLAYER_CONTROL_ON(player) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(player)
-			|| PAD::IS_CONTROL_ENABLED(0, 0xA987235F) || PAD::IS_CONTROL_ENABLED(0, 0x308588E6); //     FrontendPause = 0xD82E0BD2, 0x308588E6 = INPUT_GAME_MENU_CANCEL
-		m_enabled = !is_mission && is_playing && has_control;
+		m_enabled = !is_mission && is_playing;
 
 #if defined(_DEBUG) && defined(MANUAL_START_STOP)
 		static bool manual_stop_start = true;
@@ -75,7 +73,7 @@ namespace longer_days
 				// _SET_MILLISECONDS_PER_GAME_MINUTE, this should be a better way of fixing time jumps!
 				CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(9999999);
 				CLOCK::_SET_MILLISECONDS_PER_GAME_MINUTE(2000);
-				Log::Info << "Mod disabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << ", Weight retention value: " << *weight_retention_ptr << Log::Endl;
+				Log::Info << "Mod disabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Weight retention value: " << *weight_retention_ptr << Log::Endl;
 				if (is_mission)
 				{
 					try_log_active_mission();
@@ -88,7 +86,7 @@ namespace longer_days
 				// As R* scripts adds 1 to the value before multiplying
 				
 				*weight_retention_ptr = fmaxf(0.0f, cfg.m_weight_retention_multiplier - 1.0f);
-				Log::Info << "Mod enabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Has Control: " << has_control << ", Weight retention value: " << *weight_retention_ptr << Log::Endl;
+				Log::Info << "Mod enabled: Is Mission: " << is_mission << ", Is Playing: " << is_playing << ", Weight retention value: " << *weight_retention_ptr << Log::Endl;
 			}
 		}
 
@@ -185,10 +183,6 @@ namespace longer_days
 		// As R* scripts add 1 to the value before multiplying
 		float retention_mutliplier = *get_weight_retention_global_ptr();
 		str << "Weight Retention Multiplier (Global): " << retention_mutliplier << " | Config: " << config::get().m_weight_retention_multiplier;
-		debug::draw_text_line(line, str);
-
-		const bool native_has_control = PLAYER::IS_PLAYER_CONTROL_ON(player) || PLAYER::IS_PLAYER_SCRIPT_CONTROL_ON(player);
-		str << "Has Control (Aggregate): " << has_control << ", Game Natvies: " << native_has_control << ", Controls: (0xA987235F, 0x308588E6): " << PAD::IS_CONTROL_ENABLED(0, 0xA987235F) << ", " << PAD::IS_CONTROL_ENABLED(0, 0x308588E6);
 		debug::draw_text_line(line, str);
 
 		last_value = mins;
